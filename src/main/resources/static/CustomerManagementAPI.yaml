@@ -1,0 +1,312 @@
+openapi: 3.0.3
+info:
+  title: Customer Management API
+  description: Customer Management API
+  version: 1.0.0
+servers:
+  - url: 'https://azure-api-management-service.azure-api.net/customer-management'
+tags:
+  - name: customer
+paths:
+    /customer:
+      post:
+        summary: Create a new customer
+        operationId: createCustomer
+        parameters:
+          - $ref: '#/components/parameters/consumerId'
+          - $ref: '#/components/parameters/traceparent'
+          - $ref: '#/components/parameters/deviceType'
+          - $ref: '#/components/parameters/deviceId'
+          - $ref: '#/components/parameters/authorization'
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerRequest'
+        responses:
+          '201':
+            description: Customer created successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CreateCustomerResponse'
+          '400':
+            $ref: '#/components/responses/BadRequestResponse'
+          '500':
+            $ref: '#/components/responses/InternalServerErrorResponse'
+      get:
+        summary: Retrieve a list of customers
+        operationId: getCustomers
+        parameters:
+          - $ref: '#/components/parameters/page'
+          - $ref: '#/components/parameters/size'
+          - $ref: '#/components/parameters/consumerId'
+          - $ref: '#/components/parameters/traceparent'
+          - $ref: '#/components/parameters/deviceType'
+          - $ref: '#/components/parameters/deviceId'
+          - $ref: '#/components/parameters/authorization'
+        responses:
+          '200':
+            description: List of customers retrieved successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CustomerResponsePage'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
+          '500':
+            $ref: '#/components/responses/InternalServerErrorResponse'
+    /customer/{id}:
+      put:
+        summary: Update an existing customer
+        operationId: updateCustomerById
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+              description: Unique identifier of the customer
+              example: '0017764009'
+          - $ref: '#/components/parameters/consumerId'
+          - $ref: '#/components/parameters/traceparent'
+          - $ref: '#/components/parameters/deviceType'
+          - $ref: '#/components/parameters/deviceId'
+          - $ref: '#/components/parameters/authorization'
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomerRequest'
+        responses:
+          '200':
+            description: Customer updated successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CreateCustomerResponse'
+          '400':
+            $ref: '#/components/responses/BadRequestResponse'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
+          '500':
+            $ref: '#/components/responses/InternalServerErrorResponse'
+      get:
+        summary: Retrieve a customer by ID
+        operationId: getCustomerById
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+              description: Unique identifier of the customer
+              example: '0017764009'
+          - $ref: '#/components/parameters/consumerId'
+          - $ref: '#/components/parameters/traceparent'
+          - $ref: '#/components/parameters/deviceType'
+          - $ref: '#/components/parameters/deviceId'
+          - $ref: '#/components/parameters/authorization'
+        responses:
+          '200':
+            description: Customer retrieved successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CustomerResponse'
+          '404':
+            $ref: '#/components/responses/NotFoundResponse'
+          '500':
+            $ref: '#/components/responses/InternalServerErrorResponse'
+
+components:
+  schemas:
+    CustomerRequest:
+      type: object
+      required:
+          - firstLastName
+          - secondLastName
+      properties:
+        name:
+          type: string
+          description: Full name of the customer
+          example: 'Elizabeth Yuliana'
+        firstLastName:
+          type: string
+          description: First last name of the customer
+          example: 'Valdez'
+        secondLastName:
+          type: string
+          description: Second last name of the customer
+          example: 'Pacheco'
+        creationDate:
+          type: string
+          format: date-time
+          description: Creation date of the customer
+          example: '2023-10-01T12:00:00'
+        status:
+          type: string
+          description: Status of the customer
+          enum:
+            - active
+            - inactive
+          example: 'active'
+    CreateCustomerResponse:
+      type: object
+      properties:
+        statusCode:
+          type: string
+          description: Status of the operation
+          example: '000'
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+          example: true
+    CustomerResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the customer
+          example: '0017764009'
+        fullName:
+          type: string
+          description: Full name of the customer
+          example: 'Elizabeth Yuliana Valdez Pacheco'
+    CustomerResponsePage:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          description: Total number of customers
+        totalPages:
+          type: integer
+          description: Total number of pages
+        pageNumber:
+          type: integer
+          description: Current page number
+        pageSize:
+          type: integer
+          description: Number of customers per page
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomerResponse'
+        statusCode:
+          type: string
+          description: Status of the operation
+          example: '000'
+        success:
+          type: boolean
+          description: Indicates if the operation was successful
+          example: true
+    ErrorResponse:
+      type: object
+      properties:
+        errorCode:
+          type: string
+          description: Error code
+        errorMessage:
+          type: string
+          description: Error message
+        moreInfo:
+          type: string
+          description: Additional information about the error
+  parameters:
+    page:
+      name: page
+      in: query
+      required: false
+      schema:
+          type: integer
+          description: Page number for pagination
+    size:
+      name: size
+      in: query
+      required: false
+      schema:
+        type: integer
+        description: Number of customers per page
+    consumerId:
+      name: consumerId
+      description: Unique identifier of the consumer
+      in: header
+      required: true
+      schema:
+        type: string
+        description: Unique identifier of the consumer
+        example: 'SMP'
+    traceparent:
+      name: traceparent
+      description: TraceParent header for distributed tracing
+      in: header
+      required: true
+      schema:
+        type: string
+        description: TraceParent header for distributed tracing
+        example: '00-db65adadcc7ab67b6eaa38521c34c42a-c1d2e415b56c412b-01'
+    deviceType:
+      name: deviceType
+      description: Type of the device making the request
+      in: header
+      required: true
+      schema:
+        type: string
+        description: Type of the device making the request
+        example: 'IOS'
+    deviceId:
+      name: deviceId
+      description: Unique identifier of the device making the request
+      in: header
+      required: true
+      schema:
+        type: string
+        description: Unique identifier of the device making the request
+        example: '1234567890abcdef'
+    authorization:
+      name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+        description: Bearer token for authorization
+        example: 'Bearer your_token_here'
+  responses:
+    BadRequestResponse:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+          example:
+            errorCode: '400'
+            errorMessage: 'Invalid request'
+            moreInfo: 'The request parameters are invalid or missing.'
+    NotFoundResponse:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+          example:
+            errorCode: '404'
+            errorMessage: 'Resource not found'
+            moreInfo: 'The requested resource could not be found.'
+    InternalServerErrorResponse:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            type: object
+            allOf:
+              - $ref: '#/components/schemas/ErrorResponse'
+          example:
+            errorCode: '500'
+            errorMessage: 'Internal server error'
+            moreInfo: 'An unexpected error occurred while processing the request.'
