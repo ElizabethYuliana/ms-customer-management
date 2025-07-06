@@ -1,4 +1,10 @@
 package com.pe.customermanagement.model;
 
-public record CustomerRequest() {
+import java.time.LocalDateTime;
+
+public record CustomerRequest(String name,
+                              String firstLastName,
+                              String secondLastName,
+                              LocalDateTime creationDate,
+                              String status) {
 }

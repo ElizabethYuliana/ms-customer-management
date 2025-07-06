@@ -1,4 +1,5 @@
 package com.pe.customermanagement.model;
 
-public record CreateCustomerResponse() {
+public record CreateCustomerResponse(String statusCode,
+                                     boolean success) {
 }

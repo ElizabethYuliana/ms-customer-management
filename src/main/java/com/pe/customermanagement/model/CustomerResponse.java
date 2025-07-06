@@ -1,4 +1,8 @@
 package com.pe.customermanagement.model;
 
-public record CustomerResponse() {
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record CustomerResponse(String id,
+                               String fullName) {
 }

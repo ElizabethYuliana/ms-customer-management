@@ -1,5 +1,6 @@
 package com.pe.customermanagement.entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
@@ -7,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Setter @Getter
+@Setter @Getter @Builder
 @Document(collection = "customers")
 public class Customer {
 
@@ -17,6 +18,6 @@ public class Customer {
     private String firstLastName;
     private String secondLastName;
     private LocalDateTime creationDate;
-    private boolean status;
+    private String status;
 
 }

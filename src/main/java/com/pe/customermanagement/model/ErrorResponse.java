@@ -1,4 +1,6 @@
 package com.pe.customermanagement.model;
 
-public record ErrorResponse() {
+public record ErrorResponse(String errorCode,
+                            String errorMessage,
+                            String moreInfo) {
 }
