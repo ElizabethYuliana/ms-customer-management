@@ -2,22 +2,28 @@ package com.pe.customermanagement.mapper;
 
 import com.pe.customermanagement.entity.Customer;
 import com.pe.customermanagement.dto.*;
+import com.pe.customermanagement.enums.StatusEnum;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.pe.customermanagement.common.Constant.SPACE;
 
 @Component
 public class CustomerMapper {
 
-    public Customer fromRequest(CustomerRequest customerRequest) {
+    public Customer fromRequest(CustomerRequest request) {
         return Customer.builder()
-                .name(customerRequest.name())
-                .firstLastName(customerRequest.firstLastName())
-                .secondLastName(customerRequest.secondLastName())
+                .name(request.name())
+                .firstLastName(request.firstLastName())
+                .secondLastName(request.secondLastName())
                 .creationDate(LocalDateTime.now())
-                .status("Active")
+                .status(Objects.nonNull(request.status()) ? StatusEnum.fromValue(request.status()).getValue() :
+                        StatusEnum.ACTIVE.getValue())
                 .build();
     }
 
@@ -28,11 +34,20 @@ public class CustomerMapper {
     public CustomerResponse toCustomerResponse(Customer customer) {
         return new CustomerResponse(
                 customer.getId(),
-                customer.getName().concat(SPACE)
-                        .concat(customer.getFirstLastName()).concat(SPACE)
-                        .concat(customer.getSecondLastName()));
+                Optional.ofNullable(customer.getName()).orElse(Strings.EMPTY).concat(SPACE)
+                .concat(Optional.ofNullable(customer.getFirstLastName()).orElse(Strings.EMPTY)).concat(SPACE)
+                .concat(Optional.ofNullable(customer.getSecondLastName()).orElse(Strings.EMPTY)));
     }
 
+    public CustomerResponsePage toCustomerResponsePage(PageImpl<CustomerResponse> customerResponses)  {
+        return new CustomerResponsePage("0000",
+                true,
+                customerResponses.getTotalElements(),
+                customerResponses.getTotalPages(),
+                customerResponses.getNumber(),
+                customerResponses.getSize(),
+                customerResponses.getContent());
+    }
 
 
 }

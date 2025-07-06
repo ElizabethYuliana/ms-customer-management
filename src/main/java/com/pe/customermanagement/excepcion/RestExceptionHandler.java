@@ -1,6 +1,8 @@
 package com.pe.customermanagement.excepcion;
 
+import com.pe.customermanagement.common.Util;
 import com.pe.customermanagement.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +13,14 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.server.ServerWebInputException;
 import reactor.core.publisher.Mono;
 
-@RestControllerAdvice
+@RestControllerAdvice @Slf4j
 public class RestExceptionHandler {
 
-    @ExceptionHandler(ServerWebInputException.class)
-    public Mono<ResponseEntity<ErrorResponse>> handleMissing
-    +
-    RequestHeaderException(ServerWebInputException ex) {
+    @ExceptionHandler(MissingRequestValueException.class)
+    public Mono<ResponseEntity<ErrorResponse>> handleMissingRequestHeaderException(MissingRequestValueException ex) {
+        String headerName = Util.extractHeaderName(ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse("400", "Missing request header",
-                String.format("Header '%s' is missing", ex.getHeaders()));
+                String.format("Header '%s' is missing", headerName));
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse));
     }
 
@@ -29,10 +30,10 @@ public class RestExceptionHandler {
         return Mono.just(ResponseEntity.badRequest().body(errorResponse));
     }
 
-    @ExceptionHandler(Exception.class)
+    //@ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<ErrorResponse>> handleGeneralException(Exception ex) {
         ErrorResponse errorResponse = new ErrorResponse("500", "An unexpected error occurred", ex.getMessage());
-        return Mono.just(ResponseEntity.status(500).body(errorResponse));
+        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
 
     @ExceptionHandler(WebExchangeBindException.class)
@@ -41,19 +42,19 @@ public class RestExceptionHandler {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .reduce((m1, m2) -> m1 + "; " + m2)
                 .orElse("Validation error occurred");
-        ErrorResponse errorResponse = new ErrorResponse("400", "Validation error", errorMsg);
+        ErrorResponse errorResponse = new ErrorResponse("400", "Request ", errorMsg);
         return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse));
     }
 
     @ExceptionHandler(NotFoundException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleNotFoundException(NotFoundException ex) {
         ErrorResponse errorResponse = new ErrorResponse("404", "Resource not found", ex.getMessage());
-        return Mono.just(ResponseEntity.status(404).body(errorResponse));
+        return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse));
     }
 
     @ExceptionHandler(InternalErrorException.class)
     public Mono<ResponseEntity<ErrorResponse>> handleInternalErrorException(InternalErrorException ex) {
         ErrorResponse errorResponse = new ErrorResponse("500", "Internal server error", ex.getMessage());
-        return Mono.just(ResponseEntity.status(500).body(errorResponse));
+        return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse));
     }
 }
