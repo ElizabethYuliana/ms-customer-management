@@ -1,4 +1,4 @@
-package com.pe.customermanagement.model;
+package com.pe.customermanagement.dto;
 
 public record ErrorResponse(String errorCode,
                             String errorMessage,

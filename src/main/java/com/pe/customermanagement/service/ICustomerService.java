@@ -1,10 +1,7 @@
 package com.pe.customermanagement.service;
 
 
-import com.pe.customermanagement.model.CreateCustomerResponse;
-import com.pe.customermanagement.model.CustomerRequest;
-import com.pe.customermanagement.model.CustomerResponse;
-import com.pe.customermanagement.model.HeaderRequest;
+import com.pe.customermanagement.dto.*;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

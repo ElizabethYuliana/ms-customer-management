@@ -1,19 +1,17 @@
 package com.pe.customermanagement.controller;
 
-import com.pe.customermanagement.model.CreateCustomerResponse;
-import com.pe.customermanagement.model.CustomerRequest;
-import com.pe.customermanagement.model.CustomerResponse;
-import com.pe.customermanagement.model.HeaderRequest;
+import com.pe.customermanagement.dto.*;
 import com.pe.customermanagement.service.ICustomerService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-@Controller
+@RestController
 @RequestMapping("/customer")
 @RequiredArgsConstructor
 public class CustomerController {
@@ -22,7 +20,7 @@ public class CustomerController {
 
     @PostMapping
     public Mono<ResponseEntity<CreateCustomerResponse>> createCustomer(
-            @RequestBody CustomerRequest customerRequest,
+            @Valid @RequestBody CustomerRequest customerRequest,
             @RequestHeader(value = "consumerId") String consumeId,
             @RequestHeader(value = "traceparent") String traceParent,
             @RequestHeader(value = "deviceType") String deviceType,

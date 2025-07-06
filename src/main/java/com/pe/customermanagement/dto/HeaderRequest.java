@@ -1,6 +1,4 @@
-package com.pe.customermanagement.model;
-
-import org.springframework.web.bind.annotation.RequestHeader;
+package com.pe.customermanagement.dto;
 
 public record HeaderRequest(String consumerId,
                             String traceParent,

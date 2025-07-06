@@ -1,6 +1,4 @@
-package com.pe.customermanagement.model;
-
-import lombok.Data;
+package com.pe.customermanagement.dto;
 
 
 public record CustomerTraceEvent(

@@ -1,12 +1,11 @@
 package com.pe.customermanagement.mapper;
 
 import com.pe.customermanagement.entity.Customer;
-import com.pe.customermanagement.model.*;
+import com.pe.customermanagement.dto.*;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
-import static com.pe.customermanagement.common.Constant.APPLICATION;
 import static com.pe.customermanagement.common.Constant.SPACE;
 
 @Component

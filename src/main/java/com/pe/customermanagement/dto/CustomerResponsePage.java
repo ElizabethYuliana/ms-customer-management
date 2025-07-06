@@ -1,4 +1,4 @@
-package com.pe.customermanagement.model;
+package com.pe.customermanagement.dto;
 
 import java.util.List;
 
