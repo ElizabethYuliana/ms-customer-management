@@ -3,7 +3,6 @@ package com.pe.customermanagement.mapper;
 import com.pe.customermanagement.entity.Customer;
 import com.pe.customermanagement.dto.*;
 import com.pe.customermanagement.enums.StatusEnum;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +11,15 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.pe.customermanagement.common.Constant.SPACE;
+import static org.apache.logging.log4j.util.Strings.EMPTY;
 
+/**
+ * CustomerMapper is responsible for mapping between CustomerRequest, Customer, and CustomerResponse objects.
+ * It provides methods to convert a request into a Customer entity and to convert a Customer entity into a response.
+ *
+ * @author Elizabeth Valdez
+ * @version 1.0
+ */
 @Component
 public class CustomerMapper {
 
@@ -27,27 +34,21 @@ public class CustomerMapper {
                 .build();
     }
 
-    public CreateCustomerResponse toResponse(Customer customer) {
-        return new CreateCustomerResponse("0000", true);
-    }
-
     public CustomerResponse toCustomerResponse(Customer customer) {
         return new CustomerResponse(
                 customer.getId(),
-                Optional.ofNullable(customer.getName()).orElse(Strings.EMPTY).concat(SPACE)
-                .concat(Optional.ofNullable(customer.getFirstLastName()).orElse(Strings.EMPTY)).concat(SPACE)
-                .concat(Optional.ofNullable(customer.getSecondLastName()).orElse(Strings.EMPTY)));
+                Optional.ofNullable(customer.getName()).orElse(EMPTY).concat(SPACE)
+                .concat(Optional.ofNullable(customer.getFirstLastName()).orElse(EMPTY)).concat(SPACE)
+                .concat(Optional.ofNullable(customer.getSecondLastName()).orElse(EMPTY)));
     }
 
     public CustomerResponsePage toCustomerResponsePage(PageImpl<CustomerResponse> customerResponses)  {
-        return new CustomerResponsePage("0000",
-                true,
+        return new CustomerResponsePage(
                 customerResponses.getTotalElements(),
                 customerResponses.getTotalPages(),
                 customerResponses.getNumber(),
                 customerResponses.getSize(),
                 customerResponses.getContent());
     }
-
 
 }

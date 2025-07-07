@@ -1,12 +1,16 @@
 package com.pe.customermanagement.dto;
 
-import com.pe.customermanagement.enums.StatusEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-import java.time.LocalDateTime;
-
+/**
+ * CustomerRequest is a data transfer object that encapsulates the details of a customer request.
+ * It includes fields for the customer's name, first last name, second last name, and status.
+ *
+ * @author Elizabeth Valdez
+ * @version 1.0
+ */
 public record CustomerRequest(
         @NotBlank(message = "Name cannot be empty or null")
         String name,

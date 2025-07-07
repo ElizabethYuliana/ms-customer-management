@@ -14,7 +14,20 @@ public class LogConstant {
         Response Body   : {}
         ==========================================================================================================================""";
 
+    public static final String LOG_ERROR = """
+                                           \s
+        ============================================ Trace Event =================================================================
+        TraceParent     : {}
+        Method          : {}
+        Uri             : {}
+        Header          : {}
+        Response Status : {}
+        Response Body   : {}
+        ==========================================================================================================================""";
+
     public static final String EVENT_HUB = "Event Hub: {}";
 
-
+    private LogConstant() {
+        // Private constructor to prevent instantiation
+    }
 }

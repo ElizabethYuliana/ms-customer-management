@@ -1,8 +1,9 @@
 package com.pe.customermanagement.service;
 
-import com.pe.customermanagement.dto.AuditContext;
+
+import reactor.core.publisher.Mono;
 
 public interface EventProducerService {
 
-    <T, R> void sendAuditMessage(AuditContext<T, R> auditContext);
+    Mono<Void> sendEvent(String message);
 }

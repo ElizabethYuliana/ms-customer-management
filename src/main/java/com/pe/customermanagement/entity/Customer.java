@@ -6,7 +6,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Setter @Getter @Builder @NoArgsConstructor @AllArgsConstructor
+/**
+ * Represents a customer entity in the customer management system.
+ * This class is mapped to the "customers" collection in MongoDB.
+ *
+ * @author Elizabeth Valdez
+ * @version 1.0
+ */
+@Setter @Getter
+@Builder @NoArgsConstructor @AllArgsConstructor
 @Document(collection = "customers")
 public class Customer {
 

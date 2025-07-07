@@ -5,6 +5,13 @@ import lombok.Getter;
 
 import java.util.Arrays;
 
+/**
+ * Enum representing the status of a customer.
+ * Provides methods to convert from string values to enum instances.
+ *
+ * @author Elizabeth Valdez
+ * @version 1.0
+ */
 @Getter
 public enum StatusEnum {
     ACTIVE("Active"),
