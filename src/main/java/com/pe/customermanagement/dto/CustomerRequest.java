@@ -16,7 +16,7 @@ public record CustomerRequest(
         String name,
         @NotBlank(message = "FirstLastName cannot be empty or null")
         String firstLastName,
-        @NotNull(message = "SecondLastName cannot be empty or null")
+        @NotNull(message = "SecondLastName cannot be null")
         String secondLastName,
         @Pattern(regexp = "^(Active|Inactive)$", message = "Status must be either 'Active' or 'Inactive'")
         String status) {
