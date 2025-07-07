@@ -5,6 +5,7 @@ import com.pe.customermanagement.dto.AuditContext;
 import com.pe.customermanagement.dto.CustomerRequest;
 import com.pe.customermanagement.dto.CustomerResponse;
 import com.pe.customermanagement.dto.CustomerResponsePage;
+import com.pe.customermanagement.excepcion.InternalErrorException;
 import com.pe.customermanagement.mapper.AuditContextMapper;
 import com.pe.customermanagement.service.CustomerService;
 import com.pe.customermanagement.service.EventProducerService;
@@ -46,8 +47,10 @@ public class CustomerServiceAudited implements CustomerService {
     public Mono<CustomerResponse> createCustomer(CustomerRequest request, AuditContext context) {
         return delegate.createCustomer(request, context)
                 .map(response -> auditContextMapper.buildCustomerResponse(response, context))
-                .doOnSuccess(this::sendEvent)
+                .flatMap(this::sendEvent)
                 .doOnSuccess(this::auditLog)
+                .doOnError(this::auditLog)
+                .onErrorResume(ex -> Mono.error(new InternalErrorException(ex.getMessage(), ex.getCause())))
                 .map(AuditContext::getResponse);
     }
 
@@ -63,8 +66,10 @@ public class CustomerServiceAudited implements CustomerService {
     public Mono<CustomerResponse> updateCustomer(String id, CustomerRequest request, AuditContext context) {
         return delegate.updateCustomer(id, request, context)
                 .map(response -> auditContextMapper.buildCustomerResponse(response, context))
-                .doOnSuccess(this::sendEvent)
+                .flatMap(this::sendEvent)
                 .doOnSuccess(this::auditLog)
+                .doOnError(this::auditLog)
+                .onErrorResume(ex -> Mono.error(new InternalErrorException(ex.getMessage(), ex.getCause())))
                 .map(AuditContext::getResponse);
     }
 
@@ -80,8 +85,10 @@ public class CustomerServiceAudited implements CustomerService {
     public Mono<CustomerResponsePage> getAllCustomers(int page, int size, AuditContext context) {
         return delegate.getAllCustomers(page, size, context)
                 .map(response -> auditContextMapper.buildCustomerResponsePage(response, context))
-                .doOnSuccess(this::sendEvent)
+                .flatMap(this::sendEvent)
                 .doOnSuccess(this::auditLog)
+                .doOnError(this::auditLog)
+                .onErrorResume(ex -> Mono.error(new InternalErrorException(ex.getMessage(), ex.getCause())))
                 .map(AuditContext::getResponsePage);
     }
 
@@ -96,16 +103,24 @@ public class CustomerServiceAudited implements CustomerService {
     public Mono<CustomerResponse> getCustomerById(String id, AuditContext context) {
         return delegate.getCustomerById(id, context)
                 .map(response -> auditContextMapper.buildCustomerResponse(response, context))
-                .doOnSuccess(this::sendEvent)
+                .flatMap(this::sendEvent)
                 .doOnSuccess(this::auditLog)
+                .doOnError(this::auditLog)
+                .onErrorResume(ex -> Mono.error(new InternalErrorException(ex.getMessage(), ex.getCause())))
                 .map(AuditContext::getResponse);
     }
 
-    private void sendEvent(AuditContext context) {
-        eventProducerService.sendEvent(auditContextMapper.buildCustomerTraceEvent(context, SUCCESS_CODE)).subscribe();
+    private Mono<AuditContext> sendEvent(AuditContext context) {
+        return eventProducerService.sendEvent(auditContextMapper.buildCustomerTraceEvent(context, SUCCESS_CODE))
+            .then(Mono.fromSupplier(() -> context));
     }
 
     private void auditLog(AuditContext context) {
         LogUtil.buildLogging(context);
     }
+
+    private void auditLog(Throwable ex) {
+        LogUtil.buildLoggingError(ex);
+    }
+
 }

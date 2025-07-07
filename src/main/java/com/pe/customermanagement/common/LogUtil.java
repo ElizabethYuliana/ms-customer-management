@@ -32,6 +32,12 @@ public class LogUtil {
         log.error(UNEXPECTED_ERROR_MESSAGE, ex);
     }
 
+    public static void buildLoggingError(Throwable ex) {
+        log.error(UNEXPECTED_ERROR_MESSAGE, ex);
+    }
+
+
+
     private static String responseString(AuditContext context) {
         String response =  Objects.isNull(context.getResponse()) ? EMPTY : Util.convertObjectToJsonString(context.getResponse());
         String responsePage =  Objects.isNull(context.getResponsePage()) ? EMPTY : Util.convertObjectToJsonString(context.getResponsePage());

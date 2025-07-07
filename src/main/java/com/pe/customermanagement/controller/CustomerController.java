@@ -45,7 +45,7 @@ public class CustomerController {
 
     @GetMapping
     public Mono<ResponseEntity<CustomerResponsePage>> getAllCustomers(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "1") int size,
             ServerWebExchange exchange) {
         AuditContext context = auditContextMapper.buildAuditContext(exchange);

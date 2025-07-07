@@ -30,7 +30,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/CreateCustomerResponse'
+                  $ref: '#/components/schemas/CustomerResponse'
           '400':
             $ref: '#/components/responses/BadRequestResponse'
           '500':
@@ -86,7 +86,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/CreateCustomerResponse'
+                  $ref: '#/components/schemas/CustomerResponse'
           '400':
             $ref: '#/components/responses/BadRequestResponse'
           '404':
@@ -141,11 +141,6 @@ components:
           type: string
           description: Second last name of the customer
           example: 'Pacheco'
-        creationDate:
-          type: string
-          format: date-time
-          description: Creation date of the customer
-          example: '2023-10-01T12:00:00'
         status:
           type: string
           description: Status of the customer
@@ -153,17 +148,6 @@ components:
             - active
             - inactive
           example: 'active'
-    CreateCustomerResponse:
-      type: object
-      properties:
-        statusCode:
-          type: string
-          description: Status of the operation
-          example: '000'
-        success:
-          type: boolean
-          description: Indicates if the operation was successful
-          example: true
     CustomerResponse:
       type: object
       properties:
