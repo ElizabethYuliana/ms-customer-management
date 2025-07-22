@@ -18,7 +18,7 @@ public class RequiredHeaderValidator  {
         Map<String, String> headers = context.getHeaders();
         List<String> missingHeaders = new ArrayList<>();
 
-        if (headers.isEmpty()) {
+        if (Objects.isNull(headers)) {
             return Mono.error(new BadRequestException(HEADERS_ERROR_MSG));
         }
 
@@ -47,6 +47,5 @@ public class RequiredHeaderValidator  {
     }
 
     private RequiredHeaderValidator() {
-        // Private constructor to prevent instantiation
     }
 }
