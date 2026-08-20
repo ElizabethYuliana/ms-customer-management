@@ -40,7 +40,9 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Mono<CustomerResponse> createCustomer(CustomerRequest request, AuditContext context) {
         return RequiredHeaderValidator.validate(context)
-                .then(customerRepository.save(customerMapper.fromRequest(request)))
+                .then(Mono.just(request))
+                .map(customerMapper::fromRequest)
+                .flatMap(customerRepository::save)
                 .map(customerMapper::toCustomerResponse);
     }
 

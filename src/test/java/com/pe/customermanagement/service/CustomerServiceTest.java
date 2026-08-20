@@ -5,6 +5,7 @@ import com.pe.customermanagement.dto.CustomerRequest;
 import com.pe.customermanagement.dto.CustomerResponse;
 import com.pe.customermanagement.dto.CustomerResponsePage;
 import com.pe.customermanagement.entity.Customer;
+import com.pe.customermanagement.excepcion.BadRequestException;
 import com.pe.customermanagement.excepcion.NotFoundException;
 import com.pe.customermanagement.mapper.CustomerMapper;
 import com.pe.customermanagement.repository.CustomerRepository;
@@ -47,27 +48,34 @@ class CustomerServiceTest {
 
     @BeforeEach
     void setup() {
-        customerRequest = new CustomerRequest("Luis", "Ramirez", "Perez", "Active");
-
-        customerEntity = new Customer();
-        customerEntity.setId("65as4d5a4sd54d");
-        customerEntity.setName("Luis");
-        customerEntity.setSecondLastName("Perez");
-        customerEntity.setStatus("Active");
-
-        customerResponse = new CustomerResponse("123", "Luis Ramirez Perez");
+        customerRequest = buildCustomerRequest();
+        customerEntity = buildCustomer();
+        customerResponse = buildCustomerResponse();
         auditContext = buildAuditContext();
-
     }
+
+    @Test
+    void createCustomer_shouldFail_whenRequiredHeadersMissing() {
+        CustomerRequest request = buildCustomerRequest();
+        Map<String, String> headers = Map.of("consumerId", "web");
+        AuditContext context = new AuditContext();
+        context.setHeaders(headers);
+
+        StepVerifier.create(customerService.createCustomer(request, context))
+                .expectError(BadRequestException.class)
+                .verify();
+    }
+
 
     @Test
     void createCustomer_shouldSucceed() {
         when(customerMapper.fromRequest(customerRequest)).thenReturn(customerEntity);
-        when(customerRepository.save(any())).thenReturn(Mono.just(customerEntity));
-        when(customerMapper.toCustomerResponse(any())).thenReturn(customerResponse);
+        when(customerRepository.save(customerEntity)).thenReturn(Mono.just(customerEntity));
+        when(customerMapper.toCustomerResponse(customerEntity)).thenReturn(customerResponse);
 
         StepVerifier.create(customerService.createCustomer(customerRequest, auditContext))
-                .expectNextMatches(resp -> resp.fullName().contains("Luis Ramirez Perez"))
+                .expectNextMatches(resp -> resp.fullName().equalsIgnoreCase("Luis Ramirez Perez") &&
+                                                            resp.id().equals("65as4d5a4sd54d"))
                 .verifyComplete();
     }
 
@@ -88,7 +96,7 @@ class CustomerServiceTest {
         when(customerRepository.findById("noexist")).thenReturn(Mono.empty());
 
         StepVerifier.create(customerService.updateCustomer("noexist", customerRequest, auditContext))
-                .expectErrorMatches(NotFoundException.class::isInstance)
+                .expectError(NotFoundException.class)
                 .verify();
     }
 
@@ -107,7 +115,7 @@ class CustomerServiceTest {
         when(customerRepository.findById("noexist")).thenReturn(Mono.empty());
 
         StepVerifier.create(customerService.getCustomerById("noexist", auditContext))
-                .expectErrorMatches(NotFoundException.class::isInstance)
+                .expectError(NotFoundException.class)
                 .verify();
     }
 
@@ -135,14 +143,33 @@ class CustomerServiceTest {
 
 
     AuditContext buildAuditContext() {
-        Map<String, String> headers = new HashMap<>();
-        headers.put("consumerId", "testConsumer");
-        headers.put("traceparent", "00-1234567890abcdef1234567890abcdef-1234567890abcdef-01");
-        headers.put("deviceType", "AND");
-        headers.put("deviceId", "device123");
+        Map<String, String> headers = Map.of(
+                "consumerId", "web",
+                "traceparent", "abc-123",
+                "deviceType", "IOS",
+                "deviceId", "xyz-456");
 
         return AuditContext.builder()
                 .headers(headers)
                 .build();
     }
+
+    Customer buildCustomer() {
+        Customer customerEntity = new Customer();
+        customerEntity.setId("65as4d5a4sd54d");
+        customerEntity.setName("Luis");
+        customerEntity.setFirstLastName("Ramirez");
+        customerEntity.setSecondLastName("Perez");
+        customerEntity.setStatus("Active");
+        return customerEntity;
+    }
+
+    CustomerRequest buildCustomerRequest() {
+        return new CustomerRequest("Luis", "Ramirez", "Perez", "Active");
+    }
+
+    CustomerResponse buildCustomerResponse() {
+        return new CustomerResponse("65as4d5a4sd54d", "Luis Ramirez Perez");
+    }
+
 }
